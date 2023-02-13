@@ -1,0 +1,379 @@
+ <?php $blok="proje-yonetim"; $sayfa="proje-ekle"; ?>
+<?php include 'inc/header.php';?>
+<?php include 'inc/sidebar.php';?>
+<?php include 'inc/navbar.php';?>
+
+ <?php
+        if ($_POST) { 
+            $arac_marka = $_POST['arac_marka'];
+            $arac_model = $_POST['arac_model'];
+            $arac_tip = $_POST['arac_tip'];
+            $arac_vites = $_POST['arac_vites'];
+            $arac_yil = $_POST['arac_yil'];
+            $arac_baslik = $_POST['arac_baslik'];
+            $arac_yakit = $_POST['arac_yakit'];
+            $arac_km = $_POST['arac_km'];
+            $arac_motor = $_POST['arac_motor'];
+            $arac_renk = $_POST['arac_renk'];
+            $arac_aciklama = $_POST['arac_aciklama'];
+            $arac_fiyat = $_POST['arac_fiyat'];
+            $sayfa_baslik = $_POST['sayfa_baslik'];
+            $sayfa_aciklama = $_POST['sayfa_aciklama'];
+            $sayfa_anahtar = $_POST['sayfa_anahtar'];
+            $_user = $_POST['user'];
+            $category = $_POST['category'];
+            $hxdd =(new Advert_Properties()); 
+            $hxdd = $hxdd->checkPropertieFromPost($_POST["ozellik"]);
+            $arac_properties = $hxdd->toJson();
+            $alerji = implode("|", $_POST['alerji']);
+            $foto = $_POST['foto'];
+
+            if ($arac_baslik <> "" && $arac_aciklama <> "" && isset($_FILES['foto'])) 
+
+                if ($_FILES['foto']['tmp_name'] != "") {
+                $boyut = $_FILES['foto']['size'];
+                if ($boyut > (1024 * 1024 * 30)) {
+                    echo 'Dosya 30MB den büyük olamaz.';
+                } else {
+
+                    $tip = $_FILES['foto']['type'];
+                    $isim = $_FILES['foto']['name'];
+                    $uzanti = explode('.', $isim);
+                    $uzanti = $uzanti[count($uzanti) - 1];
+                    $random = rand();
+                    $dosya = $_FILES['foto']['tmp_name'];
+                    $foto_url = $random . "." . $uzanti;
+                    copy($dosya, '../img/' . $foto_url);
+                    echo '';
+                                $satir = [
+                                    'foto' => $foto_url,
+                                    'arac_marka' => $arac_marka,
+                                    'category' => $category,
+                                    'user' => $_user,
+                                    'arac_model' => $arac_model,
+                                    'arac_tip' => $arac_tip,
+                                    'arac_vites' => $arac_vites,
+                                    'arac_yil' => $arac_yil,
+                                    'arac_baslik' => $arac_baslik,
+                                    'arac_yakit' => $arac_yakit,
+                                    'arac_km' => $arac_km,
+                                    'arac_motor' => $arac_motor,
+                                    'arac_properties' => $arac_properties,
+                                    'arac_renk' => $arac_renk,
+                                    'arac_aciklama' => $arac_aciklama,
+                                    'arac_fiyat' => $arac_fiyat,
+                                    'sayfa_baslik' => $sayfa_baslik,
+                                    'sayfa_aciklama' => $sayfa_aciklama,
+                                    'sayfa_anahtar' => $sayfa_anahtar,
+                                    'alerji' => $alerji,
+                                ];
+
+                                $sql = "INSERT INTO proje SET 
+                                arac_properties=:arac_properties,
+                                category=:category,
+                                user=:user,
+                                foto=:foto, arac_marka=:arac_marka, arac_model=:arac_model, arac_tip=:arac_tip, arac_vites=:arac_vites, arac_yil=:arac_yil, arac_baslik=:arac_baslik, arac_yakit=:arac_yakit, arac_km=:arac_km, arac_motor=:arac_motor, arac_renk=:arac_renk, arac_aciklama=:arac_aciklama, arac_fiyat=:arac_fiyat, sayfa_baslik=:sayfa_baslik, sayfa_aciklama=:sayfa_aciklama, sayfa_anahtar=:sayfa_anahtar, alerji=:alerji;";
+                               
+                                $durum = $dbh->prepare($sql);
+                                $durum->execute($satir);
+                              
+                                 if ($durum) {
+                                    $sonId = $dbh->lastInsertId();
+                                    foreach ($_POST["en"] as $key => $value) {
+                                       dilguncelle("en","proje",$sonId,$key,$value);
+                                    }
+                                    echo ' <div class="card-body collapse show" id="collapse8">
+                              <div class="error-notice"> 
+                                 <div class="oaerror success">
+                                    <strong>Başarılı :</strong> - Belirtilen veriler eklenmiştir. <a href="proje-liste.php">Buradan Araç Listesine Erişebilirsiniz</a>
+                                 </div>
+                              </div>
+                           </div>';
+                       }
+                    }
+                 }
+              }
+        ?>
+            <!-- Page Inner Start -->
+            <!--================================-->
+            <div class="page-inner">
+               <!-- Main Wrapper -->
+               <div id="main-wrapper">
+                  <!--================================-->
+                  <!-- Breadcrumb Start -->
+                  <!--================================-->
+                  <div class="pageheader pd-t-25 pd-b-35">
+                     <div class="pd-t-5 pd-b-5">
+                        <h1 class="pd-0 mg-0 tx-20">Yönetici Paneli</h1>
+                     </div>
+                     <div class="breadcrumb pd-0 mg-0">
+                        <a class="breadcrumb-item" href="index.php">Anasayfa</a>
+                        <span class="breadcrumb-item active"> Şuan: Araç Ekle</span>
+                     </div>
+                  </div>
+                  <!--/ Breadcrumb End -->
+                  <!--================================-->
+                  <div class="row row-xs clearfix">
+                     <!--================================-->
+                     <!--  Start -->
+                     <!--================================-->
+                     <div class="col-md-12 col-lg-12">
+                        <div class="card mg-b-20">
+                           <div class="card-header">
+                              <h4 class="card-header-title">
+                                Araç Ekle
+                              </h4> 
+                              <div class="card-header-btn">
+                                 <a href="#" data-toggle="refresh" class="btn card-refresh"><i class="ion-android-refresh"></i></a>
+                              </div>
+                           </div>
+                           <div class="card-body collapse show" id="collapse7">
+ 
+                                <form action="" method="post" enctype="multipart/form-data">
+                                <div class="row">
+                                <div class="col-lg-4">
+                                          <div class="form-group">
+                                          <label class="form-control-label active"> Bayi : <span class="tx-danger">*</span></label>
+                                          <select  name="user" id="cars" class="form-control"> 
+                                             <option value="0">Yok</option>
+                                             <?
+                                                $users= (new Users())->getAll();
+                                                foreach ($users as $u) {
+                                                   /** @var User $u */
+                                                   ?>
+                                                   <option value="<?=$u->id?>" <?=$sonuc["user"]==$u->id?"selected":""?> ><?=$u->email?></option>
+                                                <?}
+                                                ?>
+                                          </select>
+                                        </div>
+                              </div>
+                                <div class="col-lg-4">
+                              <div class="form-group">
+                              <label class="form-control-label active">Araç Kategorisi: <span class="tx-danger">*</span></label>
+                              <select  name="category" id="cars" class="form-control">
+           <?
+            $cc=(new Categories())->getRootCategories();
+         
+            function ccc($category,$lvl=0){
+               global $sonuc;
+          
+            
+                $subs=(new Categories())->getSubs($category->id);
+                if(count($subs)>0){
+                 
+                   foreach ($subs as $cx) {
+                     ?>
+                     <optgroup label="<?=str_repeat("&nbsp;", $lvl).$cx->name?>">
+                     <?
+                      ccc($cx,++$lvl); 
+                     ?> 
+                   </optgroup>
+                     <?
+                   }
+                   
+                }
+                else{
+                  ?> 
+                     <option value="<?=$category->id?>" 
+                          <?=$sonuc["category"]==$category->id?"selected":"";
+                      ?>> <?= str_repeat("&nbsp;", $lvl).$category->name?></option>
+                  <?
+                 
+                }
+             }
+
+             foreach($cc as $cf){
+                  /** @var Category $cf */
+                 ?>
+                   <optgroup label="<?=str_repeat("&nbsp;",0).$cf->name?>">
+                     <? ccc($cf); ?>
+                   </optgroup>
+                 <? } ?>
+                              </select>
+                                    
+                                    </div>
+                                          </div>
+                      
+                                        <div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç Vites Tipi: <span class="tx-danger">*</span></label>
+                                          <select  class="form-control" name="arac_vites">
+
+											<option selected value="">Seçiniz</option>
+
+											<option value="Otomatik">Otomatik</option>
+
+											<option value="Manual">Manual</option>
+
+											</select>
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç Yakıt Türü: <span class="tx-danger">*</span></label>
+                                          <select  class="form-control" name="arac_yakit">
+
+											<option selected value="">Seçiniz</option>
+
+											<option value="Benzin">Benzin</option>
+
+											<option value="Dizel">Dizel</option>
+
+											<option value="Lpg">Lpg</option>
+
+											</select>
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç Yılı: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_yil">
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-3">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç KM: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_km">
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-3">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Motor Hacimi: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_motor">
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-3">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç Rengi: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_renk">
+                                        </div>
+                                      </div>  
+                                        <div class="col-lg-3">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Araç Fiyatı: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_fiyat">
+                                        </div>
+                                      </div>  
+
+                                        <div class="col-lg-12">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">İlan Başlığı: <span class="tx-danger">*</span></label>
+                                          <input class="form-control" type="text" name="arac_baslik">
+                                        </div>
+                                      </div>  
+                                       <div class="col-lg-12">
+                                       <div class="form-group">
+                                          <label class="form-control-label active">İlan Açıklaması: <span class="tx-danger">*</span></label>
+                                          <textarea name="arac_aciklama" id="arac_aciklama" class="ckeditor"></textarea>
+                                       </div>
+                                    </div> 
+                                     <?php 
+
+                                       $hxdd =(new Advert_Properties() )->data; 
+                              
+                                       foreach ($hxdd as $kat => $ozellikler) {
+                                          ?>
+                                              
+                                               <h3 style="color:black;text-align:center;" class="col-md-12"  >
+                                                    <?=$kat?>
+                                              </h3>
+     
+                                          
+                                              
+                                          <?
+                                          foreach ($ozellikler as $ozellik) {
+                                             ?>
+                                                <div class="col-md-4">
+                                                   <div class="custom-control custom-checkbox">
+                                                   <input type="checkbox" class="custom-control-input" name="ozellik[<?=$kat?>][<?=$ozellik["0"];?>]" id="customCheck<?=++$i; ?>" value="l">
+                                                         <label class="custom-control-label" for="customCheck<?= $i; ?>"><?=$ozellik["0"]?></label>
+                                                      </div> 
+                                                </div>
+                                             <?
+                                          }
+
+                                       }
+                                 ?>
+                                    </div>
+                                  <!-- Header Color Accordions Start -->
+                     <!--================================-->
+                     <div class="col-md-12 col-lg-12">
+                        
+                           <div class="card-body collapse show" id="collapse3">
+                              <div id="accordionHeaderbg">
+                                 <div class="card mb-2">
+                                    <div class="card-header bg-info">
+                                       <a class="text-light collapsed" data-toggle="collapse" href="#accordionHeaderbg1" aria-expanded="false">
+                                      Seo Ayarları 
+                                       </a>
+                                    </div>
+                                    <div id="accordionHeaderbg1" class="collapse" data-parent="#accordionHeaderbg" style="">
+                                       <div class="card-body">
+                                       <!-- form başlaması -->
+                                        <div class="row">
+                                   		<div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Sayfa Başlığı:</label>
+                                          <input class="form-control" type="text" name="sayfa_baslik">
+                                        </div>
+                                    	</div>
+                                        <div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Sayfa Açıklama:</label>
+                                          <input class="form-control" type="text" name="sayfa_aciklama">
+                                        </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                        <div class="form-group">
+                                          <label class="form-control-label active">Sayfa Anahtar Kelimeleri: (her kelime sonuna virgül koymayı unutmayın)</label>
+                                          <input class="form-control" type="text" name="sayfa_anahtar">
+                                       </div>
+                                    </div>
+                                </div>
+                                    <!-- form bitişi --> 
+                                       </div>
+                                    </div>
+                                 <!-- drop bitişi-->
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!--/ Header Color Accordions End -->
+
+                     <!--================================-->
+
+                     <!--================================-->
+                     <div class="col-md-12 col-lg-12">
+                           <div class="card-body collapse show" id="collapse5">
+                              <input type="file" class="dropify" name="foto" data-height="200" />
+                           </div>
+                     </div>	
+                     <!--================================-->
+
+                                  <div class="row mg-t-50">
+                                 <div class="col-sm-6 col-md-3">
+                                <button type="submit" class="btn btn-primary btn-with-icon btn-block mg-t-10">
+                                       <div class="ht-40">
+                                          <span class="icon wd-40"><i class="fa fa-spin fa-circle-o-notch"></i></span>
+                                          <span class="pd-x-15">Oluştur</span>
+                                       </div>
+                                    </button>
+                                </div>
+                            </div>
+                          </form>
+  
+                             </div>
+                        </div>
+                     </div>
+                     <!-- / End -->			
+                     <!--================================-->
+
+                  </div>
+               </div>
+               <!--/ Main Wrapper End -->
+            </div>
+            <!--/ Page Inner End -->
+            <!--================================-->
+<?php include 'inc/footer.php';
+
+?>
