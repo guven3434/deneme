@@ -1,10 +1,5 @@
 <?php
-/**
-* TplParser - class parse all HTML files and display from
-* this files PHP variables
-* @access public
-* @version 1.3
-*/
+
 final class TplParser
 {
 
@@ -45,6 +40,7 @@ final class TplParser
   } // end function __construct
 	
   /**
+   *
   * Set variables
   * @return void
   * @param string $sName
@@ -117,14 +113,27 @@ final class TplParser
 		$this->display( true );
     echo $this->content;
 	} // end function dbHtml
-	
-  /**
-  * Return parsed sBlock from file
-  * @return string
-  * @param string $sFile - file *.tpl
-  * @param string $sBlock
-  * @param bool   $bTrim
-  */
+
+
+  public function loadTemplateFile($filename)
+  {
+  if (!file_exists($filename)) {
+  throw new \Exception("Template file '{$filename}' not found");
+  }
+
+  $templateContent = file_get_contents($filename);
+  $this->templateString = $templateContent;
+
+  // Add this line to set the "short_open_tag" directive to true
+  ini_set('short_open_tag', '1');
+  }
+
+ //  * Return parsed sBlock from file
+ // * @return string
+ // * @param string $sFile - file *.tpl
+ // * @param string $sBlock
+//  * @param bool   $bTrim
+//  */
 	public function tbHtml( $sFile, $sBlock, $bTrim = true ){
 		$this->setFile( $this->sDir.$sFile );
 		$this->setBlock( $sBlock );
@@ -259,7 +268,7 @@ final class TplParser
 	} // end function allParse
 	
 	// global değişken isimleri
-$globalVarName = $aResults[1][$i];
+ $globalVarName = $aResults[1][$i];
 if (isset($this->aVariables[$globalVarName])) {
   $$globalVarName = $this->aVariables[$globalVarName];
 } else {
@@ -267,7 +276,7 @@ if (isset($this->aVariables[$globalVarName])) {
   $globalVarName = null;
   }
 
-// array
+array
 if (isset($aResults[2]) && !empty($aResults[2][$i])) {
   $aResults2 = [];
   preg_match_all('/[a-zA-Z_\'0-9]+/', $aResults[2][$i], $aResults2);
@@ -423,6 +432,8 @@ if (isset($aResults[2]) && !empty($aResults[2][$i])) {
   public function setFileAlt( $sFileAlt ){
     $this->sFileAlt = $sFileAlt;
   } // end function setFileAlt
+
+
 
   /**
   * function define $this->sBlock variable
