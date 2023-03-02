@@ -1,799 +1,512 @@
-<?php
-session_start();
-if (!isset($_SESSION["Giris"])) {
-    header("Location:login.php");
-    return;
-}	
-include("../ayarlar.php");
-?> 
+﻿<?php include ("includes/header.php");?>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<script src="https://use.fontawesome.com/4ad898f606.js"></script>
+<meta name="Keywords" content="<?=$ayar['sayfa_anahtar'];?>"/>
+<meta name="Description" content="<?=$ayar['sayfa_aciklama'];?>"/>
+<meta author="parstech">
+<title>Anasayfa - <?=$ayar['sayfa_baslik'];?></title>
+<?php include 'includes/navbar.php';?>
+<?php include 'includes/slider.php';?>
+<!-- =-=-=-=-=-=-= Main Content Area =-=-=-=-=-=-= -->
+<div class="main-content-area clearfix"> 
+  <!-- =-=-=-=-=-=-= Car Inspection End =-=-=-=-=-=-= -->
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <style type="text/css">
 
-	<title>Yönetim Paneli</title>
-	<meta name="author" content="İka Oto"/>
-	<!-- bootstrap -->
-	<link rel="stylesheet" type="text/css" href="style/css/bootstrap/bootstrap.min.css" />
-	
-	<!-- RTL support - for demo only -->
+    .column li {
+      float: left;
+      width: 25%;
+      padding: 10px;
+    }
 
-	<!-- 
-	If you need RTL support just include here RTL CSS file 
-    <link rel="stylesheet" type="text/css" href="css/libs/bootstrap-rtl.min.css" />
-	And add "rtl" class to <body> element - e.g. <body class="rtl"> 
-	-->
-	
-	<!-- libraries -->
-	<link rel="stylesheet" type="text/css" href="style/css/libs/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="style/css/libs/nanoscroller.css" />
+    /* Style the images inside the grid */
+    .column li img {
+      opacity: 0.8; 
+      cursor: pointer; 
+      object-fit: cover;
+      height: 100px;
+    }
 
-	<!-- global styles -->
-	<link rel="stylesheet" type="text/css" href="style/css/compiled/theme_styles.css" />
-
-	<!-- this page specific styles -->
-    	<link rel="stylesheet" href="style/css/libs/morris.css" type="text/css" />
-	<link rel="stylesheet" href="style/css/libs/daterangepicker.css" type="text/css" />
-	<link rel="stylesheet" href="style/css/libs/jquery-jvectormap-1.2.2.css" type="text/css" />
-	<link rel="stylesheet" href="style/css/libs/weather-icons.css" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="style/css/libs/dataTables.fixedHeader.css">
-	<link rel="stylesheet" type="text/css" href="style/css/libs/dataTables.tableTools.css">
-	<link rel="stylesheet" type="text/css" href="style/css/libs/dropzone.css">
-    <link rel="stylesheet" type="text/css" href="style/css/libs/magnific-popup.css">
-    <link rel="stylesheet" type="text/css" href="style/css/compiled/wizard.css">
-	<!-- Favicon -->
-	<link type="image/x-icon" href="style/favicon.png" rel="shortcut icon" />
-	<link rel="stylesheet" href="style/css/libs/select2.css" type="text/css" />
-       <link rel="stylesheet" type="text/css" href="style/css/libs/dropzone.css">
-	<!-- google font libraries -->
-	<link href='http://fonts.googleapis.com/css?family=Verdana:400,600,700,300' rel='stylesheet' type='text/css'>
-
-	<!--[if lt IE 9]>
-		<script src="js/html5shiv.js"></script>
-		<script src="js/respond.min.js"></script>
-	<![endif]-->
-    
- 	<link rel="stylesheet" type="text/css" href="style/src/jquery.tagsinput.css" />
+    .column li img:hover {
+      opacity: 1;
+    }
 
 
+  </style>
+  <!-- =-=-=-=-=-=-= Featured Ads =-=-=-=-=-=-= -->
+  <section class="custom-padding gray"> 
+    <div class="container">
+     <div class="row">
+      <!-- Heading Area -->
+      <div class="heading-panel">
+       <div class="col-xs-12 col-md-7 col-sm-6 left-side">
+        <!-- Main Title -->
+        <h1><span class="heading-color"> Vitrin İlanları</span></h1>
+      </div>
 
-    
-</head>
-<body class="boxed-layout fixed-header theme-blue-gradient">
-	<div id="theme-wrapper">
-		<header class="navbar" id="header-navbar">
-			<div class="container">
-				<a href="index.php" id="logo" class="navbar-brand">
-					<img src="style/img/logo.png" alt="" class="normal-logo logo-white"/>
-					<img src="style/img/logo-black.png" alt="" class="normal-logo logo-black"/>
-					<img src="style/img/logo-small.png" alt="" class="small-logo hidden-xs hidden-sm hidden"/>
-				</a>
-				
-				<div class="clearfix">
-				<button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="fa fa-bars"></span>
-				</button>
-				
-				<div class="nav-no-collapse navbar-left pull-left hidden-sm hidden-xs">
-					<ul class="nav navbar-nav pull-left">
-						<li>
-							<a class="btn" id="make-small-nav">
-								<i class="fa fa-bars"></i>
-							</a>
-						</li>
-						<?php
-                        $genel_sorgu = $db->query("SELECT * FROM dilek WHERE okundu = '0' ORDER BY Id DESC", PDO::FETCH_ASSOC);
-                        $toplam_kayit = $genel_sorgu->rowCount();
-						$genel_sorgu2 = $db->query("SELECT * FROM yorumlar WHERE onay = '0' ORDER BY yId DESC", PDO::FETCH_ASSOC);
-                        $toplam_kayit2 = $genel_sorgu2->rowCount();
-						$genel_sorgu3 = $db->query("SELECT * FROM ikform ORDER BY Id DESC LIMIT 2", PDO::FETCH_ASSOC);
-                        $toplam_kayit3 = $genel_sorgu3->rowCount();
-						$topla = $toplam_kayit + $toplam_kayit2 + $toplam_kayit3 + $toplam_kayit4; 
-                        echo '
-<li class="dropdown hidden-xs">
-<a class="btn dropdown-toggle" data-toggle="dropdown">
-<i class="fa fa-bell"></i>
-<span class="count">' . $topla . '</span>
-</a>';
-?>                        
-<ul class="dropdown-menu notifications-list">
-<li class="pointer">
-<div class="pointer-inner">
-<div class="arrow"></div>
-</div>
-</li>
-<li class="item-header">YENİ GELEN MESAJLAR</li>
-<?php
-$sql = $db->query("SELECT * FROM yorumlar WHERE onay = '0' ORDER BY yId DESC LIMIT 3");
-foreach ($sql as $a) {
-echo '
-<li class="item">
-<a href="index.php?page=yorumgoruntule&id=' . $a["yId"] . '">
-<i class="fa fa-comment"></i>
-<span class="content">' . $a["adsoyad"] . ' <b>Yorum Gönderdi...</b></span>
-<span class="time"><i class="fa fa-clock-o"></i></span>
-</a>
-</li>
-';
-}
-?>
-<?php
-$sql = $db->query("SELECT * FROM dilek WHERE okundu = '0' ORDER BY Id DESC LIMIT 3");
-foreach ($sql as $a) {
-echo '
-<li class="item">
-<a href="index.php?page=mailgoruntule&id=' . $a["Id"] . '">
-<i class="fa fa-envelope-o"></i>
-<span class="content">' . $a["adsoyad"] . ' <b>İletişim Formundan Yazdı.</b></span>
-<span class="time"><i class="fa fa-clock-o"></i></span>
-</a>
-</li>
-';
-}
-?>
-<?php
-$sql = $db->query("SELECT * FROM ikform ORDER BY Id DESC LIMIT 2");
-foreach ($sql as $a) {
-echo '
-<li class="item">
-<a href="../upload/cv2331/' . $a["dosya"] . '" target="_blank">
-<i class="fa fa-users"></i>
-<span class="content">' . $a["baslik"] . ' <b>İş Başvuru Formu Gönderdi.</b></span>
-<span class="time"><i class="fa fa-clock-o"></i></span>
-</a>
-</li>
-';
-}
-?>
-</ul>
-</li>
-					</ul>
-				</div>
-				
-				<div class="nav-no-collapse pull-right" id="header-nav">
-					<ul class="nav navbar-nav pull-right">
-	       <li class="profile-dropdown">
-							<a href="../index.php" target="_blank" class="btn">
-								<i class="fa fa-laptop"></i> Mağazaya Git
-							</a>
-						</li>
-						<li class="profile-dropdown">
-							<a href="sistem/cikis.php" class="btn">
-								<i class="fa fa-power-off"></i> Çıkış 
-							</a>
-						</li>
-               
-					</ul>
-				</div>
-				</div>
-			</div>
-		</header>
-        
-		<div id="page-wrapper" class="container">
-			<div class="row">
-				<div id="nav-col">
-					<section id="col-left" class="col-left-nano">
-						<div id="col-left-inner" class="col-left-nano-content">
-							<div id="user-left-box" class="clearfix hidden-sm hidden-xs dropdown profile2-dropdown">
-								<img alt="" src="style/img/yonetici.png" />
-								<div class="user-box">
-								
-<?php
-$sql = $db->query("SELECT * FROM yoneticiler ORDER BY Id ASC", PDO::FETCH_ASSOC);
-foreach($sql as $a){ 
- $adsoyad = $a["adsoyad"];
-echo '	<span class="name">
-										<a href="#" class="dropdown-toggle" data-toggle="dropdown"> ' . $a["adsoyad"] . '
-<i class="fa fa-angle-down"></i>
-</a>
-<ul class="dropdown-menu">
-<li><a href="index.php?page=yoneticiduzenle&id=' . $a["id"] . '"><i class="fa fa fa-cog"></i>Yönetici Düzenle</a></li>
-<li><a href="sistem/cikis.php"><i class="fa fa-power-off"></i>Çıkış Yap</a></li>
-</ul>	</span>';	
-}
-?>
-								
-									<span class="status">
-										<i class="fa fa-circle"></i> Bağlandı
-									</span>
-								</div>
-							</div>
-							<div class="collapse navbar-collapse navbar-ex1-collapse" id="sidebar-nav">	
-								<ul class="nav nav-pills nav-stacked">
-									<li class="nav-header nav-header-first hidden-sm hidden-xs">
-								İÇERİK YÖNETİMİ
-									</li>
-									<li>
-										<a href="index.php">
-											<i class="fa fa-home"></i>
-											<span>Ana Sayfa</span>
-										
-										</a>
-									</li>
-                                    
-                                    
-<?php
-$sql6 = $db->query("SELECT * FROM menu_admin WHERE ust_menu = '0' ORDER BY sira ASC");
-foreach($sql6 as $om){
-$menuadi = $om["menuadi"];
-$icon = $om["icon"];
-	if ($om[sec] == $_GET["menusec"]){
-					$durum = 'active';	
-					} else {
-					$durum = "";} 
-echo ' 	<li class="'.$durum.' ozel-bg">
-                                        <a href="#" class="dropdown-toggle">
-											<i class="fa ' . $icon . '"></i>
-											<span>' . $menuadi . '</span>
-											<i class="fa fa-angle-right drop-icon"></i>
-										</a>
-<ul class="submenu">'; 
-$sql7 = $db->prepare("SELECT * FROM menu_admin WHERE ust_menu = ? ORDER BY Id ASC");
-$sql7->execute(array(
-$om["Id"]
-));
-foreach($sql7 as $h){		 
-$sayfaurl = $h["link"];
-$menuget = $h["sec"];
-$menuadi = $h["menuadi"];
-$iconlar = $h["icon"];	  
-		  echo '<li>
-												<a href="index.php?page=' . $sayfaurl . '&menusec=' . $menuget . '">
-												<i class="fa ' . $iconlar . '"></i>	' . $menuadi . '
-												</a>
-											</li>
-							';  
-		  }
-		  echo '
-                                 
-										</ul>
-									</li>'; 
-									
+    </div>
+    <!-- Heading Area End -->        
+    <div class="col-sm-12 col-xs-12 col-md-12">
 
-}	
+      <div class="row">
+        <!-- Sorting Filters -->
 
-	  ?>
- <?php                                   
-if ('frm' == $_GET["menusec"]){
-$durum19 = 'active';	
-} else {
-$durum19 = "";} 
-echo ' 
-<li class="'.$durum19.' ozel-bg">
-<a href="#" class="dropdown-toggle">
-<i class="fa fa-file"></i>
-<span>Gelen Form & Mesajlar</span>
-<i class="fa fa-angle-right drop-icon"></i>
-</a>
-<ul class="submenu">
-<li>
-<a href="index.php?page=gelenyorumlar&menusec=frm">
-<i class="fa fa-list"></i>	Müşteri Yorumları
-</a>
-</li>
-<li>
-<a href="index.php?page=isbasvurusu&menusec=frm">
-<i class="fa fa-list"></i>	İş Başvuru Formları
-</a>
-</li>
-<li>
-<a href="index.php?page=ebulten&menusec=frm">
-<i class="fa fa-list"></i>	E-Bülten Kayıtları
-</a>
-</li>
-</ul>
-</li>';
-?>                          
-                                    
+        <div class="grid-style-1">
+         <div class="posts-masonry">
+          <!-- Listing Ad Grid -->
 
-									<li class="nav-header hidden-sm hidden-xs">
-									SİTE GENEL AYARLAR
-									</li>
- <?php                                   
-if ('my' == $_GET["menusec"]){
-$durum9 = 'active';	
-} else {
-$durum9 = "";} 
-echo ' 
-<li class="'.$durum9.' ozel-bg">
-<a href="#" class="dropdown-toggle">
-<i class="fa fa-desktop"></i>
-<span>Site Ayarları</span>
-<i class="fa fa-angle-right drop-icon"></i>
-</a>
-<ul class="submenu">
-<li>
-<a href="index.php?page=genelayarlar&menusec=my">
-<i class="fa fa-cogs"></i>	Genel Ayarlar
-</a>
-</li>
-<li>
-<a href="index.php?page=anasayfayonetimi&menusec=my">
-<i class="fa fa-cogs"></i>	Ana Sayfa Blok Yönetimi
-</a>
-</li>
-<li>
-<a href="index.php?page=menuyonetimi&menusec=my">
-<i class="fa fa-cogs"></i>	Menü  Yönetimi
-</a>
-</li>
-</ul>
-</li>';
-?>
-								
-										<li class="ozel-bg">
-												<a href="index.php?page=mailayarlari">
-													<i class="fa fa-envelope-o"></i>	
-                                                  <span>  Smtp Mail Ayarları</span>
-												</a>
-											</li>
-										<li class="ozel-bg">
-												<a href="index.php?page=iletisimyonetimi&id=1">
-													<i class="fa fa-map-marker"></i>
-                                                  <span>  İletişim Ayarları</span>
-												</a>
-											</li>
-											<li class="ozel-bg">
-												<a href="index.php?page=yoneticiduzenle&id=1">
-												<i class="fa fa-user"></i>	
-                                               <span> Yönetici Ayarları</span>
-												</a>
-											</li>
-	
-								</ul>
-							</div>
-						</div>
-					</section>
-					<div id="nav-col-submenu"></div>
-				</div>
-				<div id="content-wrapper">
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="row">
-								<div class="col-lg-12">
-									<div id="content-header" class="clearfix">
-										<div class="pull-left">
+          <?php
 
-											<h1>Yönetim Paneli</h1>
-                                            
-                                            			<ol class="breadcrumb">
-										<li><a href="index.php">Ana Sayfa</a></li>
-										<li class="active"><span><?php echo $_GET["page"]; ?></span></li>
-									</ol>
-										</div>
-
-										<div class="pull-right hidden-xs">
-											<div class="xs-graph pull-left">
-											
-                                            
-                                                <div class="graph-label">
-													 <i class="fa fa-check-square-o"></i> Lisans: <b><?php echo "$_SERVER[SERVER_NAME]"; ?>  </b> 
-												</div>
-                                                	
-													 <div class="graph-label">
-													<b> <i class="fa fa-globe"></i> <?php  echo "$_SERVER[SERVER_ADDR]";  ?> </b> 
-												</div>
-                                                
-                                                
-												<div class="graph-content spark-orders"></div>
-											</div>
-
-										
-										</div>
-									</div>
-								</div>
-							</div>
-
-                       <!-- Fonsiyonlar Başlangıç -->
-            <!-- Değişiklik Yapmayınız, Web Paketiniz Çalışmayabilir.-->
-       
-	
-             <?php  include("ofisimo.php");?> 
-             <!-- Fonksiyonlar Bitiş -->				
-					
-					<footer id="footer-bar" class="row">
-						<p id="footer-copyright" class="col-xs-12">
-						Copyright &copy; 2023 - <?php echo date("Y");?> <a href="http://ikaoto.com" target="_blank" />İKA OTO</a> İka Group
-						</p>
-					</footer>
-				</div>
-			</div>
-		</div>
-	</div>
-		
-
-	
-	<!-- global scripts -->
-	
-	<script src="style/js/jquery.js"></script>
-    <script src="style/js/jquery.min.js"></script>
-	<script src="style/js/bootstrap.js"></script>
-	<script src="style/js/jquery.nanoscroller.min.js"></script>
-	
-	<script type="text/javascript" src="style/src/jquery.tagsinput.js"></script>
-	<!-- To test using the original jQuery.autocomplete, uncomment the following -->
-	<!--
-	<script type='text/javascript' src='http://xoxco.com/x/tagsinput/jquery-autocomplete/jquery.autocomplete.min.js'></script>
-	<link rel="stylesheet" type="text/css" href="http://xoxco.com/x/tagsinput/jquery-autocomplete/jquery.autocomplete.css" />
-	-->
-	<script type="text/javascript">
-
-		function onAddTag(tag) {
-			alert("Kelime Yazın: " + tag);
-		}
-
-		$(function() {
-
-			$('#tags_1').tagsInput({width:'auto'});
+          $suankicat= (new Category())->get($_GET["category"]);
+          $subs =  (new Categories)->getSubs($suankicat->id);
+          $fullsubs = (new Categories)->getAllSubs($suankicat->id);
+          $ww=[];
+          if($suankicat)$ww[]= $suankicat->id;
 
 
-// Uncomment this line to see the callback functions in action
-//			$('input.tags').tagsInput({onAddTag:onAddTag,onRemoveTag:onRemoveTag,onChange: onChangeTag});
+          foreach ($fullsubs as $kat) {
+           /** @var Category $kat */
+           $ww[]=$kat->id;
+         }
 
-// Uncomment this line to see an input with no interface for adding new tags.
-//			$('input.tags').tagsInput({interactive:false});
-		});
-
-	</script>   
-    
-	<!-- this page specific scripts -->
-	<script src="style/js/moment.min.js"></script>
-    <script src="style/js/jquery.slimscroll.min.js"></script>
-	<script src="style/js/jquery.easypiechart.min.js"></script>
-	<script src="style/js/jquery-jvectormap-1.2.2.min.js"></script>
-	<script src="style/js/jquery-jvectormap-world-merc-en.js"></script>
-	<script src="style/js/gdp-data.js"></script>
-	<script src="style/js/jquery.sparkline.min.js"></script>
-	<script src="style/js/skycons.js"></script>
-		<!-- this page specific scripts -->
-     	<script src="style/js/wizard.js"></script>   
-	<script src="style/js/jquery.dataTables.js"></script>
-	<script src="style/js/jquery.dataTables.bootstrap.js"></script>
-    	<!-- this page specific scripts -->
-	<script src="style/js/jquery.maskedinput.min.js"></script>
-	<script src="style/js/bootstrap-datepicker.js"></script>
-	<script src="style/js/moment.min.js"></script>
-	<script src="style/js/daterangepicker.js"></script>
-	<script src="style/js/bootstrap-timepicker.min.js"></script>
-	<script src="style/js/select2.min.js"></script>
-	<script src="style/js/hogan.js"></script>
-	<script src="style/js/typeahead.min.js"></script>
-	<script src="style/js/jquery.pwstrength.js"></script>
-<!-- this page specific scripts -->
-	<script src="style/js/ckeditor/ckeditor.js"></script>
-    	<!-- theme scripts -->
-	<script src="style/js/dropzone.js"></script>
-	<script src="style/js/jquery.magnific-popup.min.js"></script>
-    	<!-- this page specific scripts -->
-	<script src="style/js/jquery.nestable.js"></script>
-
-	<script src="style/js/scripts.js"></script>
-	<script src="style/js/pace.min.js"></script>
+         
+         if($_POST){ 
+           $_SESSION["filtre"]=$_POST;
+         }elseif($_GET["category"]){
+           $_POST=  $_SESSION["filtre"];
+         }
+         
 
 
-<script>
-	$(document).ready(function() {
-		var table = $('#table-example').dataTable({
 
-			'sDom': 'lTfr<"clearfix">tip',
-		
-		});
-		var table = $('#table-example3').dataTable({
+         $where=[];
+         $filtre=false;
+         $whereex=[];
+         if(count($ww)>0){
+           $where[]= "category in(".implode(",",$ww).")";
+           $filtre= true;
+         }
 
-			'sDom': 'lTfr<"clearfix">tip',
-		
-		});
-		var table = $('#table-example2').dataTable({
 
-		'sDom': 'lTfr<"clearfix">tip',
-		
-		});
-		var table = $('#table-example4').dataTable({
 
-			'sDom': 'lTfr<"clearfix">tip',
-		
-		});
-		var table = $('#table-example5').dataTable({
+         $vites= $_POST["vites"];
 
-			'sDom': 'lTfr<"clearfix">tip',
-		
-		});
-	});
-			$('.chart').easyPieChart({
-			easing: 'easeOutBounce',
-			onStep: function(from, to, percent) {
-				$(this.el).find('.percent').text(Math.round(percent));
-			},
-			barColor: '#3498db',
-			trackColor: '#f2f2f2',
-			scaleColor: false,
-			lineWidth: 8,
-			size: 130,
-			animate: 1500
-		});
-	</script>
+         if($vites){
+           $filtre= true;
 
-	<script>
-	$(function($) {
-		//tooltip init
-		$('#exampleTooltip').tooltip();
+           $in = "";
+               $i = 0;// we are using an external counter 
+               // because the actual array keys could be dangerous
+               foreach ($vites as $item)
+               {
+                $key = ":arac_vites".$i++;
+                $in .= "$key,";
+                  $whereex[$key] = $item; // collecting values into a key-value array
+                }
+               $in = rtrim($in,","); // :id0,:id1,:id2
 
-		//nice select boxes
-		$('#sel2').select2();
-		
-		$('#sel2Multi').select2({
-			placeholder: 'Kategori Seçiniz',
-			allowClear: true
-		});
-	
-		//masked inputs
-		$("#maskedDate").mask("99/99/9999");
-		$("#maskedPhone").mask("(999) 999-9999");
-		$("#maskedPhoneExt").mask("(999) 999-9999? x99999");
-		$("#maskedTax").mask("99-9999999");
-		$("#maskedSsn").mask("999-99-9999");
-		
-		$("#maskedProductKey").mask("a*-999-a999",{placeholder:" ",completed:function(){alert("You typed the following: "+this.val());}});
-		
-		$.mask.definitions['~']='[+-]';
-		$("#maskedEye").mask("~9.99 ~9.99 999");
-	
-		//datepicker
-		$('#datepickerDate').datepicker({
-		  format: 'mm-dd-yyyy'
-		});
+               $where[]="arac_vites in ($in)";
+             }  
 
-		$('#datepickerDateComponent').datepicker();
-		
-		//daterange picker
-		$('#datepickerDateRange').daterangepicker();
-		
-		//timepicker
-		$('#timepicker').timepicker({
-			minuteStep: 5,
-			showSeconds: true,
-			showMeridian: false,
-			disableFocus: false,
-			showWidget: true
-		}).focus(function() {
-			$(this).next().trigger('click');
-		});
-		
-		//autocomplete simple
-		$('#exampleAutocompleteSimple').typeahead({                              
-			prefetch: '/style/data/countries.json',
-			limit: 10
-		});
-		
-		//autocomplete with templating
-		$('#exampleAutocomplete').typeahead({                              
-			name: 'twitter-oss',                                                        
-			prefetch: '/style/data/repos.json',                                             
-			template: [                                                              
-				'<p class="repo-language">{{language}}</p>',                              
-				'<p class="repo-name">{{name}}</p>',                                      
-				'<p class="repo-description">{{description}}</p>'                         
-			].join(''),                                                                 
-			engine: Hogan                                                               
-		});
-		
-		//password strength meter
-		$('#examplePwdMeter').pwstrength({
-			label: '.pwdstrength-label'
-		});
-		
-	});
-	</script> 
-		<script>
-	$(function() {
-		$(document).ready(function() {
-			$('#gallery-photos-lightbox').magnificPopup({
-				type: 'image',
-				delegate: 'a',
-				gallery: {
-					enabled: true
-			    }
-			});
-		});
-	});
-	</script>
 
-	<script>
-	$(function () {
-		$('#myWizard').wizard();
-		
-		//masked inputs
-		$("#maskedDate").mask("99/99/9999");
-		$("#maskedPhone").mask("(999) 999-9999");
-		$("#maskedPhoneExt").mask("(999) 999-9999? x99999");
-	});
-	</script>
-    
-<script>
-$(document).ready(function()
-{
-    var updateOutput = function(e)
-    {
-        var list   = e.length ? e : $(e.target),
-            output = list.data('output');
-        if (window.JSON) {
-            output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
-        } else {
-            output.val('JSON browser support required for this demo.');
-        }
-    };
-    // activate Nestable for list 1
-    $('#nestable').nestable({
-        group: 1
-    })
-    .on('change', updateOutput);
-    // output initial serialised data
-    updateOutput($('#nestable').data('output', $('#nestable-output')));
-    $('#nestable-menu').on('click', function(e)
-    {
-        var target = $(e.target),
-            action = target.data('action');
-        if (action === 'expand-all') {
-            $('.dd').nestable('expandAll');
-        }
-        if (action === 'collapse-all') {
-            $('.dd').nestable('collapseAll');
-        }
-    });
-});
-</script>
+             $yil= $_POST["yil1"];
+             $yil2= $_POST["yil2"];
+             if(is_numeric($yil)){ 
+               $filtre= true;
+               $where []="arac_yil>=:yil1 and arac_yil<=:yil2 ";
+               $whereex["yil1"] =  $yil ;  //implode(",",$_POST["yil"]);
+               $whereex["yil2"] =  $yil2 ;   
+             }  
 
-<script>
-  $(document).ready(function(){
-    $("#load").hide();
-    $("#submit").click(function(){
-       $("#load").show();
 
-       var dataString = { 
-              label : $("#label").val(),
-              link : $("#link").val(),
-			  href : $("#href").val(),
-              id : $("#id").val()
-            };
+             $fiyat1= $_POST["fiyat1"];
+             $fiyat2= $_POST["fiyat2"];
+             if(is_numeric($fiyat2)){ 
+               $filtre= true;
+               $where []="arac_fiyat>=:fiyat1 and arac_fiyat<=:fiyat2 ";
+               $whereex["fiyat1"] =  $fiyat1 ;  //implode(",",$_POST["yil"]);
+               $whereex["fiyat2"] =  $fiyat2 ;   
+             }  
 
-        $.ajax({
-            type: "POST",
-            url: "sistem/save_menu.php",
-            data: dataString,
-            dataType: "json",
-            cache : false,
-            success: function(data){
-              if(data.type == 'add'){
-                 $("#menu-id").append(data.menu);
-              } else if(data.type == 'edit'){
-                 $('#label_show'+data.id).html(data.label);
+
+
+
+
+             if($filtre)    $filtre= "where  ".implode(" and ",$where);
+
+
+             $sonucinstaayar["sayfabasi"] = 5;
+             $page = isset($_GET["page"]) ? intval($_GET["page"]) : 1;   
+
+
+             $sorgu = $dbh->prepare("SELECT * FROM proje $filtre  where vitrin=1  order by id desc  LIMIT 9 " );
+             $sorgu2 = $dbh->prepare("SELECT * FROM proje $filtre");
+
+             $sorgu->execute($whereex);
+             $sorgu2->execute($whereex);
+             $sorgukayitsayisi= $sorgu2->rowCount();
+
+             while ($sonuc = $sorgu->fetch()) {
+              $id = $sonuc['id']; 
+              $arac_marka = $sonuc['arac_marka'];
+              $arac_model = $sonuc['arac_model'];
+              $arac_tip  = $sonuc['arac_tip'];
+              $arac_vites = $sonuc['arac_vites'];
+              $arac_yil = $sonuc['arac_yil'];
+              $arac_baslik = $sonuc['arac_baslik'];
+              $arac_aciklama = $sonuc['arac_aciklama'];
+              $arac_fiyat = $sonuc['arac_fiyat'];
+              $foto = $sonuc['foto'];
+              $tarih = $sonuc['tarih'];
+              $baslikseo=seo( $sonuc['arac_baslik']); 
+              $check = $dbh->query("SELECT * FROM arac_marka WHERE id = '".$arac_marka."' ", PDO::FETCH_ASSOC);
+              if ($check->rowCount()) {
+               foreach ($check as $check) {
+               }
+               $kategori = $check["marka_baslik"];
+             }
+             $checkx = $dbh->query("SELECT * FROM arac_model WHERE id = '".$arac_model."' ", PDO::FETCH_ASSOC);
+             if ($checkx->rowCount()) {
+               foreach ($checkx as $checkx) {
+               }
+               $kategorix = $checkx["model_baslik"];
+             }  
+             $checkxx = $dbh->query("SELECT * FROM arac_tip WHERE id = '".$arac_tip."' ", PDO::FETCH_ASSOC);
+             if ($checkxx->rowCount()) {
+              foreach ($checkxx as $checkxx) {
               }
-              $('#label').val('');
-              $('#link').val('');
-			   $('#href').val('');
-              $('#id').val('');
-              $("#load").hide();
-            } ,error: function(xhr, status, error) {
-              alert(error);
-            },
-        });
-    });
+              $kategorixx = $checkxx["tip_baslik"];
+            }               
 
-    $('.dd').on('change', function() {
-        $("#load").show();
-     
-          var dataString = { 
-              data : $("#nestable-output").val(),
-            };
+            ?>
 
-        $.ajax({
-            type: "POST",
-            url: "sistem/save.php",
-            data: dataString,
-            cache : false,
-            success: function(data){
-              $("#load").hide();
-            } ,error: function(xhr, status, error) {
-              alert(error);
-            },
-        });
-    });
+            <div class="col-md-4 col-sm-4 col-xs-12  ">
+             <div class="white category-grid-box-1 ">
+               <div class="featured-ribbon">
+                 <span>VİTRİN</span>
+               </div>
+               <!-- Image Box -->
+               <div class="image"><a title="İlan No: <?php echo $sonuc['id'];?>" href="ilan-<?=$baslikseo?>-i<?=$sonuc['id'];?>"> <img src="img/<?=$sonuc['foto'];?>" class="img-responsive"></a></div>
+               <div class="ad-info-1">
+                 <ul>
+                  <li><i class="flaticon-fuel-1"></i> <?=$sonuc['arac_yakit'];?></li>
+                  <li><i class="flaticon-dashboard"></i> <?=$sonuc['arac_km'];?> km </li>
+                  <li><i class="flaticon-calendar-2"></i> <?=$sonuc['arac_yil'];?></li>
+                </ul>
+              </div>
+              <!-- Short Description -->
+              <div class="short-description-1 ">
+               <h6><center>
+                 <?php
+                 $k = new Category();$katlar=[];
+                 $k->get($sonuc["category"]); 
+                 while($k->id!=0){
+                   $katlar[]= clone $k;
+                   $k=$k->getParent();
 
-    $("#save").click(function(){
-         $("#load").show();
-     
-          var dataString = { 
-              data : $("#nestable-output").val(),
-            };
+                 }
 
-        $.ajax({
-            type: "POST",
-            url: "sistem/save.php",
-            data: dataString,
-            cache : false,
-            success: function(data){
-              $("#load").hide();
-              alert('Başarılı bir şekilde Güncellendi.');
-          
-            } ,error: function(xhr, status, error) {
-              alert(error);
-            },
-        });
-    });
 
- 
-    $(document).on("click",".del-button",function() {
-        var x = confirm('Alt Menüleri varsa komple silinir! Menü Silinsin mi?');
-        var id = $(this).attr('id');
-        if(x){
-            $("#load").show();
-             $.ajax({
-                type: "POST",
-                url: "sistem/delete.php",
-                data: { id : id },
-                cache : false,
-                success: function(data){
-                  $("#load").hide();
-                  $("li[data-id='" + id +"']").remove();
-                } ,error: function(xhr, status, error) {
-                  alert(error);
-                },
-            });
-        }
-    });
+                 $katlar = array_reverse( $katlar);
+                 foreach ($katlar as $k=>$kat) {
 
-    $(document).on("click",".edit-button",function() {
-        var id = $(this).attr('id');
-        var label = $(this).attr('label');
-        var link = $(this).attr('link');
-        $("#id").val(id);
-        $("#label").val(label);
-        $("#link").val(link);
-    });
+                   ?>
+                   <a href="araclarimiz-<?=seo($kat->name)?>-k<?=$kat->id?>"> <font color="#db1940"><?=$kat->name?></font></a> <? 
+                   if(count($katlar)-1 != $k){
+                     ?>
+                     /
+                     <?php
+                   }
 
-    $(document).on("click","#reset",function() {
-        $('#label').val('');
-        $('#link').val('');
-        $('#id').val('');
-    });
 
-  });
+                 ?>
+                       - <a title="İlan No: <?=$sonuc['id'];?>"><?=$sonuc['id'];?></a>
+               </center> </h6><br>
+               <!-- Location --> 
+               <p><center><a title="<?=$sonuc['arac_baslik'];?>" href="ilan-<?=$baslikseo?>-i<?=$id?>"><?=$sonuc['arac_baslik'];?></a></center></p>
+               <hr>
+               <!-- Ad Meta Stats -->
+               <span class="ad-price"><?=kutuphane::paraformat( $sonuc['arac_fiyat'])?> TL</span>
+               <button data-target="#ad-preview<?=$sonuc['id'];?>" data-toggle="modal" class="btn btn-danger margin-bottom-10 pull-right" type="button" style="background-color: #000; border-color: #000; padding: 10px;"> <i class="far fa-eye"></i></button>
+               <a title="İlan No: <?=$sonuc['id'];?>" class="btn btn-danger margin-bottom-10 pull-right" href="tel:0<?=$ayar['telefon'];?>"><i class="fa fa-phone"></i> Bilgi Al</a>
 
+             </div>
+           </div>
+           <!-- Product Preview Popup -->
+           <div class="quick-view-modal modalopen" id="ad-preview<?=$sonuc['id'];?>" tabindex="-1" role="dialog" aria-hidden="true" style="    overflow: auto;">
+             <div class="modal-dialog modal-lg ad-modal">
+              <button class="close close-btn popup-cls" aria-label="Close" data-dismiss="modal" type="button"> <i class="fa-times fa"></i> </button>
+              <div class="modal-content single-product">
+               <div class="diblock">
+                <h4> <font color="black"> <b><center>+ <?=$sonuc['arac_baslik'];?></center></b></font></h4>
+                <div class="col-lg-7 col-sm-12 col-xs-12"> 
+                 <div class="clearfix"></div>
+                 
+                 <div>
+                  <center>
+                    <img id="expandedImg<?=$sonuc['id'];?>" src="img/<?=$sonuc['foto'];?>" style="    height: 256px;
+                    object-fit: cover;">
+                  </center>
+                </div>
+                <div>
+                  <ul class="column" >
+                    <li><img alt="" src="img/<?=$sonuc['foto'];?>" id="<?=$sonuc['id'];?>" onclick="myFunction(this);"></li>
+
+                    <?php
+
+                    $sorgux = $dbh->prepare("SELECT * FROM proje_galeri where kategori_sec='".$sonuc["id"]."' order by rand() limit 3");
+                    $sorgux->execute(); 
+                    while ($sonucx = $sorgux->fetch()) {
+
+
+                      $foto = $sonucx['foto'];
+                      ?>
+                      <li><img alt="" src="img/<?=$sonucx['foto'];?>" id="<?=$sonuc['id'];?>" onclick="myFunction(this);"></li>
+                    <?php } ?>
+
+
+
+                  </ul>
+                </div>
+              </div>
+              <div class=" col-sm-12 col-lg-5 col-xs-12">
+               <div class="summary entry-summary">
+                <div class="ad-preview-details">
+                  <br>
+                  <div class="overview-price">
+                    <span><?=kutuphane::paraformat( $sonuc['arac_fiyat'])?> TL</span>
+                  </div>
+                  <div class="clearfix"></div> 
+                  <ul class="ad-preview-info col-md-6 col-sm-6">
+                    <li>
+                     <span>Yakıt Türü:</span>
+                     <p><?=$sonuc['arac_yakit'];?></p>
+                   </li>
+                   <li>
+                     <span>Vites Türü:</span>
+                     <p><?=$sonuc['arac_vites'];?></p>
+                   </li>
+                   <li>
+                     <span>KM :</span>
+                     <p><?=$sonuc['arac_km'];?> KM</p>
+                   </li>
+
+                 </ul>
+                 <ul class="ad-preview-info col-md-6 col-sm-6">
+                  <li>
+                   <span>Renk:</span>
+                   <p><?=$sonuc['arac_renk'];?></p>
+                 </li>
+                 <li>
+                   <span>Motor Gücü:</span>
+                   <p><?=$sonuc['arac_motor'];?> cc</p>
+                 </li>
+                 <li>
+                   <span>Çıkış Tarihi:</span>
+                   <p><?=$sonuc['arac_yil'];?></p>
+                 </li>
+
+               </ul>
+               <button class="btn btn-theme btn-block" type="submit">Contact Dealer</button>
+             </div>
+           </div>
+           <!-- .summary -->
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+ <!-- / Product Preview Popup -->     
+</div>
+<!-- Listing Ad Grid -->
+
+
+<?php } ?>
+</div>
+</div>
+
+</div>
+<!-- Row End -->
+
+
+
+</div>
+<!-- Top Dealer Ads  --> 
+</div>
+</div>
+</div>
+</section>
+
+<section class="custom-padding">
+  <!-- Main Container -->
+  <div class="container">
+   <!-- Content Box -->
+   <!-- Row -->
+   <div class="row">
+    <!-- Heading Area -->
+    <div class="heading-panel">
+     <div class="col-xs-12 col-md-7 col-sm-6 left-side">
+      <!-- Main Title -->
+      <h1><span class="heading-color"> Son Haberler</span></h1>
+    </div>
+
+  </div>
+  <style type="text/css">
+   .sinifim img { width: 400px; height:250px; }
+ </style>
+ <!-- Middle Content Box -->
+ <div class="col-md-12 col-xs-12 col-sm-12">
+   <div class="row">
+    <div class="posts-masonry" style="position: relative; height: 541.5px;">
+     <!-- Blog Post-->
+     <?php $habersorgu = $dbh->prepare("SELECT * FROM haber order by id desc limit 3 ");
+
+     $habersorgu->execute();
+
+     while ($habersonuc = $habersorgu->fetch()) {
+
+
+      $id = $habersonuc['id'];
+
+      $haber_baslik = $habersonuc['haber_baslik']; 
+
+      $haber_aciklama = $habersonuc['haber_aciklama']; 
+
+      $foto = $habersonuc['foto'];
+
+      $tarih = $habersonuc['tarih'];
+
+      $baslikseo=seo( $habersonuc['haber_baslik']);  
+
+      ?>
+
+
+
+
+      <div class="col-md-4 col-sm-6 col-xs-12" style="position: absolute; left: 0px; top: 0px;">
+        <div class="blog-post">
+         <div class="post-img sinifim" >
+          <a href="haber-<?=$baslikseo?>-h<?=$id?>"> <img class="img-responsive" alt="" src="img/<?=$foto?>" > </a>
+
+        </div>
+
+        <h5> <center><a hhref="haber-<?=$baslikseo?>-h<?=$id?>"><?=$haber_baslik?></a></center> </h5>
+
+
+        <center><a href="haber-<?=$baslikseo?>-h<?=$id?>"><strong>Devamını Oku</strong></a>
+        </center>
+      </div>
+    </div>
+  <? }?>
+
+  <!-- Blog Grid -->
+</div>
+<div class="clearfix"></div>
+</div>
+</div>
+<!-- Middle Content Box End -->
+</div>
+<!-- Row End -->
+</div>
+<!-- Main Container End -->
+</section>
+
+
+<!-- =-=-=-=-=-=-= Ads Archieve End =-=-=-=-=-=-= --> 
+<style type="text/css">
+ .boyutlandirma img {
+  max-width: 350px;
+  height: 300px;
+}
+</style>
+<section class="custom-padding white over-hidden">
+  <!-- Main Container -->
+  <div class="container">
+   <!-- Row -->
+   <div class="row">
+    <!-- Heading Area -->
+    <div class="heading-panel">
+     <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+      <!-- Main Title -->
+      <h1>Instagram <span class="heading-color"> Son</span> Paylaşımlarımız</h1>
+      <!-- Short Description -->
+      <p class="heading-text">Instagram paylaşımlarımız</p>
+    </div>
+  </div>
+  <!-- Middle Content Box -->
+  <div class="col-md-12 col-xs-12 col-sm-12">
+   <div class="row">
+    <div class="featured-slider container owl-carousel owl-theme">
+
+     <!-- başlar -->
+     <?php
+     $sorgu = $dbh->prepare("SELECT * FROM urunler_insta ");
+     $sorgu->execute();
+     $instaayar = $dbh->prepare("SELECT * FROM instaAyar ");
+     $instaayar->execute();
+     $sonucinstaayar = $instaayar->fetch();
+     $page = isset($_GET["page"]) ? intval($_GET["page"]) : 1;   
+     $sorgu2 = $dbh->prepare("SELECT * FROM urunler_insta limit ".(($page-1)* $sonucinstaayar["sayfabasi"]).",". $sonucinstaayar["sayfabasi"]        );
+
+     $sorgu2->execute();
+
+
+     while ($sonuc = $sorgu2->fetch()) {
+      $id = $sonuc['id']; 
+      $link = $sonuc['link']; 
+      $resim = $sonuc['resim'];     
+      $tarih = $sonuc['tarih'];    
+      $phpdate = strtotime( $tarih );
+      $mysqldate = date( 'd-m-Y ', $phpdate );  
+      ?>
+      <div class="item">
+        <div class="grid-style-2">
+         <!-- Listing Ad Grid -->
+         <div class="col-md-12 col-xs-12 col-sm-12">
+          <div class="category-grid-box-1"> 
+           <div class="image boyutlandirma">
+            <img alt="Carspot" src="img/urunler/<?=$sonuc['resim'];?>" class="img-responsive">
+            <div class="ribbon popular"></div>
+            <div class="price-tag">
+             <div class="price"><span>Instagram Son Verileri</span></div>
+           </div>
+         </div>
+         <div class="short-description-1 clearfix">
+          <div class="category-title"> <span><?php echo substr($sonuc['aciklama'],0,120); ?> ...</span> </div>
+        </div>
+        <div class="ad-info-1">
+          <p><i class="flaticon-calendar"></i> &nbsp;<span><?=$mysqldate?></span> </p>
+          <ul class="pull-right"> 
+           <li> <a href="<?=$sonuc['link'];?>" target="_blank"><i class="flaticon-message"></i></a></li>
+         </ul>
+       </div>
+     </div>
+     <!-- Listing Ad Grid -->
+   </div>
+ </div>
+</div>
+<!-- biter -->
+<?php } ?>
+
+
+</div>
+</div>
+</div>
+<!-- Middle Content Box End -->
+</div>
+<!-- Row End -->
+</div>
+<!-- Main Container End -->
+</section>
+
+<?php include 'includes/footer.php';?>
+
+<script>
+  function myFunction(imgs) {
+    var expandImg = document.getElementById("expandedImg"+imgs.id);
+    expandImg.src = imgs.src;
+    console.log(imgs.id);
+    expandImg.parentElement.style.display = "block";
+  }
 </script>
-<script> 
-$('#href').change(function(){
-
-                    var value = $(this).val();
-
-                    if(value=='other'){
-
-                         $('.link').removeClass('hidden');
-
-                         $('.link input').attr('required','required');
-
-                    }else{
-
-                         $('.link').addClass('hidden');
-
-                         $('.link input').removeAttr('required');
-
-                    }
-
-               });
-</script>
-<script> 
-$(document).on("click",".ac",function() {
-$('.link').removeClass('hidden');
-$('.link input').attr('required','required');
-});
-</script> 
-
-</body>
-</html>
-<?php
-ob_end_flush();
-?>
+<?php } ?>
