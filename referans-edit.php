@@ -7,43 +7,33 @@
                     <h1>Referans Düzenle</h1>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-
-    <!-- Main content -->
 
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <!-- left column -->
                 <div class="col-md-12">
                     <?php
-                    if (isset($_POST["save"])) {
-                        if ( $_POST[ "save" ] == 1453 ) {
+                    if (isset($_POST['save'])) {
+                        if ( $_POST[ 'save' ] == 1453 ) {
+                            $id = $_POST[ 'id' ];
                             $title = $_POST[ 'title' ];
                             $description = $_POST[ 'description' ];
-                            $images = 'images/' . $_FILES[ 'images' ][ 'name' ];
                             $tarih = date ( 'Y-m-d H:i:s' );
                             $user_id = 1;
                             $durum = $_POST[ 'durum' ][ 0 ];
-                            $images_temp = $_FILES[ 'images' ][ 'tmp_name' ];
-                            if ( file_exists ( $images ) ) {
-                                print '<div class="alert alert-danger">Aynı isimle dosya mevcuttur...</div>';
+
+                            $sql = "UPDATE referanslar SET $title=?, $description=?, $tarih=?, $durum=?, $user_id=? WHERE id=? ";
+                            $args = [ $title , $description , $tarih , $durum , $user_id, $id];
+                            $args = $adminclass->getsecure ( $args );
+                            $query = $adminclass->pdoinsert ( $sql , $args );
+                            if ( $query ) {
+                                print '<div class="alert alert-success">İşlem Başarılı</div>';
                                 header ( "refresh:2;url=referans" );
                             } else {
-                                move_uploaded_file ( $images_temp , $images );
-
-                                $sql = "INSERT INTO referanslar (title, description, image, user_id, durum, tarih) VALUES (?, ?, ?, ?, ?, ?)";
-                                $args = [ $title , $description , $images , $user_id , $durum , $tarih ];
-                                $args = $adminclass->getsecure ( $args );
-                                $query = $adminclass->pdoinsert ( $sql , $args );
-                                if ( $query ) {
-                                    print '<div class="alert alert-success">İşlem Başarılı</div>';
-                                    header ( "refresh:2;url=referans" );
-                                } else {
-                                    print '<div class="alert alert-danger">İşlem Başarısız</div>';
-                                    header ( "refresh:2;url=referans" );
-                                }
+                                print '<div class="alert alert-danger">İşlem Başarısız</div>';
+                                header ( "refresh:2;url=referans" );
                             }
                         }
                     }
@@ -60,7 +50,7 @@
                         <form method="post" enctype="multipart/form-data">
                             <input type="hidden" name="id" value="<?php print $id;?>>">
                             <?php
-                            $sql = "SELECT * FROM referanslar id = {$id}";
+                            $sql = "SELECT * FROM referanslar WHERE id = {$id}";
                             $query = $adminclass->pdoQuery ($sql);
                             if ($query){
                                 ?>
@@ -72,7 +62,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Açıklama</label>
-                                    <textarea class="form-control" rows="5" name="description"></textarea>
+                                    <textarea class="form-control" rows="5" name="description"><?php echo $query[0]['description'];?></textarea>
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-12">
@@ -91,9 +81,9 @@
                                     <div class="input-group">
                                         <div class="custom-file">
                                             <input type="file" name="images">
-
                                         </div>
                                     </div>
+                                    <img src="<?php echo $query[0]['image'];?>" style="width: 100px;">
                                 </div>
                             </div>
                             <?php
